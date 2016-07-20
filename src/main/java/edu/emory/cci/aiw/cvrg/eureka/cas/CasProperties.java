@@ -68,4 +68,9 @@ public class CasProperties extends AbstractProperties {
 				|| isGitHubAuthEnabled()
 				|| isGlobusAuthEnabled();
 	}
+
+	public String getEurekaWebappURL() {return getValue("eureka.webapp.url");}
+	public String getEurekaServiceURL() {return getValue("eureka.services.url");}
+	public String getEurekaETLURL() {return getValue("eureka.etl.url");}
+	public String getI2b2URL() {return getValue("i2b2.url");}
 }
