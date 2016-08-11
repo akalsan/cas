@@ -88,29 +88,49 @@
 			</div>
 		</div>
 		<c:if test="${casProperties.OAuthEnabled}">
-			<div class="row">
-				<div class="col-sm-6 col-sm-offset-3 text-center">
-					<h4>or sign in with</h4>
-					<c:if test="${casProperties.googleAuthEnabled}">
-						<a href="${Google2ProviderUrl}" class="btn btn-social-icon btn-lg btn-google-plus" title="Sign in with Google">
-							<i class="fa fa-google-plus"></i>
-						</a>
-					</c:if>
-					<c:if test="${casProperties.gitHubAuthEnabled}">
-						<a href="${GitHubProviderUrl}" class="btn btn-social-icon btn-lg btn-github" title="Sign in with GitHub">
-							<i class="fa fa-github"></i>
-						</a>
-					</c:if>
-					<c:if test="${casProperties.twitterAuthEnabled}">
-						<a href="${SSLTwitterProviderUrl}" class="btn btn-social-icon btn-lg btn-twitter" title="Sign in with Twitter">
-							<i class="fa fa-twitter"></i>
-						</a>
-					</c:if>
-					<c:if test="${casProperties.globusAuthEnabled}">
-						<a href="${GlobusProviderUrl}"><!--<img src="${pageContext.request.contextPath}/images/globus_45.png" width="45" height="45" title="Sign in with Globus" alt="Globus">-->Globus</a>
-					</c:if>
-				</div>
-			</div>
+			<c:choose>
+				<c:when test="${casProperties.OAuthDirectLogin}">
+					<c:choose>
+						<c:when test="${casProperties.googleAuthEnabled}">
+							<c:redirect url="${Google2ProviderUrl}"/>
+						</c:when>
+						<c:when test="${casProperties.gitHubAuthEnabled}">
+						    <c:redirect url="${GitHubProviderUrl}"/>
+						</c:when>
+						<c:when test="${casProperties.twitterAuthEnabled}">
+							<c:redirect url="${SSLTwitterProviderUrl}"/>
+						</c:when>
+						<c:otherwise>
+							<c:redirect url="${GlobusProviderUrl}"/>
+						</c:otherwise>
+					</c:choose>
+				</c:when>
+				<c:otherwise>
+					<div class="row">
+						<div class="col-sm-6 col-sm-offset-3 text-center">
+							<h4>or sign in with</h4>
+							<c:if test="${casProperties.googleAuthEnabled}">
+								<a href="${Google2ProviderUrl}" class="btn btn-social-icon btn-lg btn-google-plus" title="Sign in with Google">
+									<i class="fa fa-google-plus"></i>
+								</a>
+							</c:if>
+							<c:if test="${casProperties.gitHubAuthEnabled}">
+								<a href="${GitHubProviderUrl}" class="btn btn-social-icon btn-lg btn-github" title="Sign in with GitHub">
+									<i class="fa fa-github"></i>
+								</a>
+							</c:if>
+							<c:if test="${casProperties.twitterAuthEnabled}">
+								<a href="${SSLTwitterProviderUrl}" class="btn btn-social-icon btn-lg btn-twitter" title="Sign in with Twitter">
+									<i class="fa fa-twitter"></i>
+								</a>
+							</c:if>
+							<c:if test="${casProperties.globusAuthEnabled}">
+								<a href="${GlobusProviderUrl}"><!--<img src="${pageContext.request.contextPath}/images/globus_45.png" width="45" height="45" title="Sign in with Globus" alt="Globus">-->Globus</a>
+							</c:if>
+						</div>
+					</div>
+				</c:otherwise>
+			</c:choose>
 		</c:if>
 	</c:otherwise>
 </c:choose>

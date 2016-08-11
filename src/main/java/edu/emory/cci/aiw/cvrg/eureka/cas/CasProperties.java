@@ -68,4 +68,26 @@ public class CasProperties extends AbstractProperties {
 				|| isGitHubAuthEnabled()
 				|| isGlobusAuthEnabled();
 	}
+
+	public boolean isOAuthDirectLogin() {
+		if (getValue("cas.auth.direct.login") != null && Boolean.parseBoolean(getValue("cas.auth.direct.login"))) {
+			int countOfEnabledProviders = 0;
+			if (isGoogleAuthEnabled()) {
+				countOfEnabledProviders += 1;
+			}
+			if (isGitHubAuthEnabled()) {
+				countOfEnabledProviders += 1;
+			}
+			if (isTwitterAuthEnabled()) {
+				countOfEnabledProviders += 1;
+			}
+			if (isGlobusAuthEnabled()) {
+				countOfEnabledProviders += 1;
+			}
+			if (countOfEnabledProviders == 1) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
