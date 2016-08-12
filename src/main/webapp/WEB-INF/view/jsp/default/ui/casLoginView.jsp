@@ -35,7 +35,9 @@
 <c:if test="${param.oauth_provider != null}">
 	<c:redirect url="${casProperties.applicationUrl}"/>
 </c:if>
-<h3>Login</h3>
+<c:if test="${casProperties.localOrLDAPAuthentication}">
+	<h3>Login</h3>
+</c:if>
 <c:choose>
 	<c:when test="${not pageContext.request.secure}">
 		<div class="label label-danger">
@@ -50,43 +52,45 @@
 				*Please note that loading real patient data into the system is strictly prohibited!
 			</p>
 		</c:if>
-		<div class="row">
-			<div class="col-sm-6 col-sm-offset-3">
-				<form:form method="post" id="fm1" cssClass="" commandName="${commandName}" htmlEscape="true">
-					<div class="form-group has-error">
-						<div class="help-block">
-							<form:errors path="*" cssClass="" id="status" element="span"/>
+		<c:if test="${casProperties.localOrLDAPAuthentication}">
+			<div class="row">
+				<div class="col-sm-6 col-sm-offset-3">
+					<form:form method="post" id="fm1" cssClass="" commandName="${commandName}" htmlEscape="true">
+						<div class="form-group has-error">
+							<div class="help-block">
+								<form:errors path="*" cssClass="" id="status" element="span"/>
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label for="username">Username</label>
-						<form:input cssClass="form-control" cssErrorClass="" id="username" size="25" tabindex="1"
+						<div class="form-group">
+							<label for="username">Username</label>
+							<form:input cssClass="form-control" cssErrorClass="" id="username" size="25" tabindex="1"
 									accesskey="${userNameAccessKey}" path="username" autocomplete="false"
 									htmlEscape="true"/>
-					</div>
-					<div class="form-group">
-						<label for="password">Password</label>
+						</div>
+						<div class="form-group">
+							<label for="password">Password</label>
 							<%--
 							NOTE: Certain browsers will offer the option of caching passwords for a user.  There is a non-standard attribute,
 							"autocomplete" that when set to "off" will tell certain browsers not to prompt to cache credentials.  For more
 							information, see the following web page:
 							http://www.geocities.com/technofundo/tech/web/ie_autocomplete.html
 							--%>
-						<form:password cssClass="form-control" cssErrorClass="" id="password" size="25" tabindex="2"
+							<form:password cssClass="form-control" cssErrorClass="" id="password" size="25" tabindex="2"
 									   path="password" accesskey="${passwordAccessKey}" htmlEscape="true"
 									   autocomplete="off"/>
-					</div>
-					<input name="submit" id="submit" class="btn btn-lg btn-primary btn-block" accesskey="l" value="Login"
+						</div>
+						<input name="submit" id="submit" class="btn btn-lg btn-primary btn-block" accesskey="l" value="Login"
 						   tabindex="4" type="submit"/>
-					<div style="text-align: right">
-						<a href="${casProperties.applicationUrl}forgot_password.jsp">Forgot Password?</a>
-					</div>
-					<input type="hidden" name="lt" value="${loginTicket}"/>
-					<input type="hidden" name="execution" value="${flowExecutionKey}"/>
-					<input type="hidden" name="_eventId" value="submit"/>
-				</form:form>
+						<div style="text-align: right">
+							<a href="${casProperties.applicationUrl}forgot_password.jsp">Forgot Password?</a>
+						</div>
+						<input type="hidden" name="lt" value="${loginTicket}"/>
+						<input type="hidden" name="execution" value="${flowExecutionKey}"/>
+						<input type="hidden" name="_eventId" value="submit"/>
+					</form:form>
+				</div>
 			</div>
-		</div>
+		</c:if>
 		<c:if test="${casProperties.OAuthEnabled}">
 			<c:choose>
 				<c:when test="${casProperties.OAuthDirectLogin}">
@@ -108,7 +112,14 @@
 				<c:otherwise>
 					<div class="row">
 						<div class="col-sm-6 col-sm-offset-3 text-center">
-							<h4>or sign in with</h4>
+							<c:choose>
+								<c:when test="${casProperties.localOrLDAPAuthentication}">
+									<h4>or sign in with</h4>
+								</c:when>
+								<c:otherwise>
+									<h4>sign in with</h4>
+								</c:otherwise>
+							</c:choose>
 							<c:if test="${casProperties.googleAuthEnabled}">
 								<a href="${Google2ProviderUrl}" class="btn btn-social-icon btn-lg btn-google-plus" title="Sign in with Google">
 									<i class="fa fa-google-plus"></i>

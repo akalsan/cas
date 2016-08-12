@@ -19,10 +19,7 @@
  */
 package edu.emory.cci.aiw.cvrg.eureka.cas;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -48,7 +45,7 @@ public abstract class AbstractProperties {
 	private static final String CONFIG_DIR_SYS_PROP = "eureka.config.dir";
 
 	private static final String PROPERTIES_FILENAME = "application.properties";
-
+	private static final String CAS_PROPERTIES_FILENAME = "cas.properties";
 	/**
 	 * Fallback properties file for application configuration as a resource.
 	 */
@@ -61,17 +58,68 @@ public abstract class AbstractProperties {
 	private final Properties properties;
 
 	private final File casDotProperties;
+	private static final String FALLBACK_CAS_CONFIG_FILE = '/' + CAS_PROPERTIES_FILENAME;
 
 	private String configDir;
 
 
 	public AbstractProperties() {
 		this.properties = new Properties();
+		setConfigDir();
+		this.casDotProperties = new File(this.configDir, "cas.properties");
 		loadFallbackConfig();
 		loadDefaultConfig();
-		this.casDotProperties = new File(this.configDir, "cas.properties");
+		loadCasDotProperties();
 	}
-	
+
+	private void setConfigDir(){
+		this.configDir = System.getProperty(CONFIG_DIR_SYS_PROP);
+		if (this.configDir == null) {
+			this.configDir = getDefaultConfigDir();
+		}
+		if (this.configDir == null) {
+			throw new AssertionError("eureka.config.dir not specified in " + FALLBACK_CONFIG_FILE);
+		}
+	}
+
+	/**
+	 * Loads the cas configuration.
+	 */
+	private void loadCasDotProperties() {
+		File casFileInUse = this.casDotProperties;
+		if (!this.casDotProperties.exists()) {
+			casFileInUse = new File(FALLBACK_CAS_CONFIG_FILE);
+		}
+		if (casFileInUse.exists()) {
+			LOGGER.info("Trying to load default cas configuration from {}",
+					casFileInUse.getAbsolutePath());
+			InputStream inputStream = null;
+			try {
+				inputStream = new FileInputStream(casFileInUse);
+				this.properties.load(inputStream);
+				inputStream.close();
+				inputStream = null;
+			} catch (IOException ex) {
+				LOGGER.error("Error reading application.properties file {}: {}. "
+								+ "Built-in defaults will be used, some "
+								+ "of which are unlikely to be what you want.",
+						casFileInUse.getAbsolutePath(), ex.getMessage());
+			} finally {
+				if (inputStream != null) {
+					try {
+						inputStream.close();
+					} catch (IOException ignore) {
+					}
+				}
+			}
+		}else {
+			LOGGER.warn("No cas configuration file found at {0}. "
+							+ "Built-in defaults will be used, some "
+							+ "of which are unlikely to be what you want.",
+					casFileInUse.getAbsolutePath());
+		}
+	}
+
 	/**
 	 * Loads the application configuration.
 	 *
@@ -84,13 +132,6 @@ public abstract class AbstractProperties {
 	 * alternative configuration directory.
 	 */
 	private void loadDefaultConfig() {
-		this.configDir = System.getProperty(CONFIG_DIR_SYS_PROP);
-		if (this.configDir == null) {
-			this.configDir = getDefaultConfigDir();
-		}
-		if (this.configDir == null) {
-			throw new AssertionError("eureka.config.dir not specified in " + FALLBACK_CONFIG_FILE);
-		}
 		File configFile = new File(this.configDir, PROPERTIES_FILENAME);
 		if (configFile.exists()) {
 			LOGGER.info("Trying to load default configuration from {}",
@@ -162,6 +203,7 @@ public abstract class AbstractProperties {
 	 * INI configuration files.
 	 */
 	public final String getConfigDir() {
+
 		return this.configDir;
 	}
 

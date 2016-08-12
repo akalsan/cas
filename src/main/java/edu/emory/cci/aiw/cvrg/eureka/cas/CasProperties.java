@@ -69,8 +69,20 @@ public class CasProperties extends AbstractProperties {
 				|| isGlobusAuthEnabled();
 	}
 
+	public boolean isLocalOrLDAPAuthentication(){
+		String authHandlers = getValue("eureka.authHandlers");
+		if(authHandlers == null || authHandlers.isEmpty()){
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * method to identify if the cas-login screen needs to be skipped to go to
+	 * oauth login screen.
+	 * @return
+	 */
 	public boolean isOAuthDirectLogin() {
-		if (getValue("cas.auth.direct.login") != null && Boolean.parseBoolean(getValue("cas.auth.direct.login"))) {
 			int countOfEnabledProviders = 0;
 			if (isGoogleAuthEnabled()) {
 				countOfEnabledProviders += 1;
@@ -87,7 +99,6 @@ public class CasProperties extends AbstractProperties {
 			if (countOfEnabledProviders == 1) {
 				return true;
 			}
-		}
 		return false;
 	}
 }
