@@ -4,7 +4,7 @@ package edu.emory.cci.aiw.cvrg.eureka.cas;
  *
  * @author Andrew Post
  */
-public class CasProperties extends AbstractProperties {
+public class ApplicationProperties extends AbstractProperties {
 	
 	public boolean isEphiProhibited() {
 		return Boolean.parseBoolean(getValue("eureka.webapp.ephiprohibited"));
